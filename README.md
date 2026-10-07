@@ -2,7 +2,7 @@
 
 > Track all your Indian investments (stocks, mutual funds, ETFs, FDs, gold) in one clean dashboard, with charts that show where your money is and how it's doing.
 
-![CI](https://github.com/YOUR_GITHUB_USERNAME/investment-tracker/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Shivaansh29/investment-tracker/actions/workflows/ci.yml/badge.svg)
 
 **Live demo:** _coming soon_
 
@@ -28,7 +28,7 @@
 ## Getting started
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/investment-tracker.git
+git clone https://github.com/Shivaansh29/investment-tracker.git
 cd investment-tracker
 npm install
 cp .env.example .env.local   # then fill in your Supabase keys
