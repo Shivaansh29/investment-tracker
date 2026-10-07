@@ -48,7 +48,7 @@ Open http://localhost:3000.
 ## Roadmap
 
 - [x] Project setup, CI pipeline
-- [ ] Dashboard with charts
+- [x] Dashboard with charts (sample data)
 - [ ] Authentication
 - [ ] Holdings CRUD backed by PostgreSQL
 - [ ] Deploy to Vercel, demo account
