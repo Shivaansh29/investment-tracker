@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Investment Tracker
 
-## Getting Started
+> Track all your Indian investments (stocks, mutual funds, ETFs, FDs, gold) in one clean dashboard, with charts that show where your money is and how it's doing.
 
-First, run the development server:
+![CI](https://github.com/YOUR_GITHUB_USERNAME/investment-tracker/actions/workflows/ci.yml/badge.svg)
+
+**Live demo:** _coming soon_
+
+## Features
+
+- 🔐 Sign up and log in; your data is private to your account
+- ➕ Add, edit, and delete holdings across asset types
+- 📊 Dashboard with total invested, current value, and profit/loss
+- 🍩 Allocation charts by asset type and by holding
+- ₹ Indian number formatting (₹1,23,456.78)
+
+## Tech stack
+
+| Area               | Tools                                           |
+| ------------------ | ----------------------------------------------- |
+| Frontend           | Next.js (App Router), React, TypeScript         |
+| Styling            | Tailwind CSS, shadcn/ui                         |
+| Charts             | Recharts                                        |
+| Backend & database | Supabase (PostgreSQL, Auth, Row Level Security) |
+| Testing            | Vitest, Playwright                              |
+| CI/CD              | GitHub Actions, Vercel                          |
+
+## Getting started
 
 ```bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/investment-tracker.git
+cd investment-tracker
+npm install
+cp .env.example .env.local   # then fill in your Supabase keys
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script              | What it does               |
+| ------------------- | -------------------------- |
+| `npm run dev`       | Start the dev server       |
+| `npm run lint`      | Lint with ESLint           |
+| `npm run typecheck` | Type-check with TypeScript |
+| `npm test`          | Run unit tests (Vitest)    |
+| `npm run format`    | Format code with Prettier  |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Roadmap
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [x] Project setup, CI pipeline
+- [ ] Dashboard with charts
+- [ ] Authentication
+- [ ] Holdings CRUD backed by PostgreSQL
+- [ ] Deploy to Vercel, demo account
+- [ ] Live NSE/BSE and mutual fund prices
+- [ ] XIRR returns, CSV import, portfolio history chart
