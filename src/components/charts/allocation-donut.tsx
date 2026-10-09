@@ -2,7 +2,7 @@
 
 import { Pie, PieChart, Sector, Tooltip, type PieSectorShapeProps } from "recharts";
 import type { AssetTypeBreakdown } from "@/lib/portfolio";
-import { formatINR, formatINRCompact, formatPercent } from "@/lib/format";
+import { formatINRCompact, formatINRWhole, formatPercent } from "@/lib/format";
 import { ASSET_TYPE_COLORS, SURFACE_COLOR } from "./chart-colors";
 import { ChartTooltip } from "./chart-tooltip";
 
@@ -44,7 +44,7 @@ export function AllocationDonut({
                 <ChartTooltip
                   title={slice.label}
                   rows={[
-                    { label: "Current value", value: formatINR(slice.currentValue) },
+                    { label: "Current value", value: formatINRWhole(slice.currentValue) },
                     { label: "Share of portfolio", value: formatPercent(slice.allocationPct) },
                   ]}
                 />

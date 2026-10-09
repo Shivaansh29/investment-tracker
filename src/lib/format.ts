@@ -27,9 +27,25 @@ export function formatINRWhole(value: number): string {
   return inrWhole.format(value);
 }
 
-/** ₹12.35L / ₹1.23Cr, for chart axes and tight spaces. */
+/** ₹12.35L / ₹1.23Cr, for legends and other tight spaces. */
 export function formatINRCompact(value: number): string {
   return inrCompact.format(value);
+}
+
+const AXIS_UNITS = [
+  [1e7, "Cr"],
+  [1e5, "L"],
+  [1e3, "K"],
+] as const;
+
+/**
+ * Chart axis tick that uses one unit for the whole axis, chosen from the axis's
+ * largest value, so ticks never mix units (₹0, ₹0.8L, ₹1.6L, not ₹80K, ₹1.6L).
+ */
+export function formatINRAxisTick(value: number, axisMax: number): string {
+  if (value === 0) return "₹0";
+  const [divisor, suffix] = AXIS_UNITS.find(([size]) => axisMax >= size) ?? [1, ""];
+  return `₹${Number((value / divisor).toFixed(2))}${suffix}`;
 }
 
 /** Signed amount, e.g. +₹1,250 or −₹980. */

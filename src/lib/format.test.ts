@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatINR,
+  formatINRAxisTick,
   formatINRCompact,
   formatPercent,
   formatSignedINR,
@@ -15,6 +16,14 @@ describe("INR formatting", () => {
   it("compacts to lakh and crore", () => {
     expect(formatINRCompact(250000)).toBe("₹2.5L");
     expect(formatINRCompact(12300000)).toBe("₹1.23Cr");
+  });
+
+  it("keeps one unit across a chart axis", () => {
+    expect(formatINRAxisTick(0, 320000)).toBe("₹0");
+    expect(formatINRAxisTick(80000, 320000)).toBe("₹0.8L");
+    expect(formatINRAxisTick(160000, 320000)).toBe("₹1.6L");
+    expect(formatINRAxisTick(25000000, 30000000)).toBe("₹2.5Cr");
+    expect(formatINRAxisTick(5000, 20000)).toBe("₹5K");
   });
 
   it("signs gains and losses", () => {

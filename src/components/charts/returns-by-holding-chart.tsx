@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -14,57 +14,52 @@ import {
   type BarShapeProps,
   type YAxisTickContentProps,
 } from "recharts";
+import { Button } from "@/components/ui/button";
+import { useElementWidth } from "@/hooks/use-element-width";
 import type { HoldingMetrics } from "@/lib/portfolio";
-import { formatINR, formatSignedINR, formatSignedPercent } from "@/lib/format";
+import { formatINRWhole, formatSignedINR, formatSignedPercent } from "@/lib/format";
 import { GAIN_COLOR, GRID_COLOR, LOSS_COLOR } from "./chart-colors";
 import { ChartTooltip } from "./chart-tooltip";
 
-const ROW_HEIGHT = 36;
 const AXIS_TICK = { fill: "var(--muted-foreground)", fontSize: 12 };
 
-/** Below this chart width (px), use a narrower name column so bars keep room. */
-const NARROW_WIDTH = 520;
+/** Below this chart width (px), names go on their own line above each bar. */
+const STACKED_WIDTH = 560;
+/** Approximate width of one character at 12px, used to fit names to the space. */
+const CHAR_WIDTH = 6.6;
+/** With more holdings than this, show the best and worst few until "Show all" is pressed. */
+const COLLAPSED_LIMIT = 10;
 
-/** Holding name on one line (Recharts would otherwise wrap long names). */
-function makeNameTick(maxChars: number) {
-  return function NameTick({ x, y, payload }: YAxisTickContentProps) {
-    const name = String(payload.value);
-    return (
-      <text x={x} y={y} dy={4} textAnchor="end" fontSize={12} fill="var(--foreground)">
-        <title>{name}</title>
-        {name.length > maxChars ? `${name.slice(0, maxChars - 1)}…` : name}
-      </text>
-    );
-  };
-}
-
-/** Tracks an element's width so the chart can adapt to small screens. */
-function useWidth<T extends HTMLElement>() {
-  const ref = useRef<T>(null);
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    if (!ref.current) return;
-    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
-    observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-  return [ref, width] as const;
+function truncate(text: string, maxChars: number) {
+  return text.length > maxChars ? `${text.slice(0, maxChars - 1)}…` : text;
 }
 
 /** Horizontal bars of % return per holding, best first. Gains green, losses red. */
 export function ReturnsByHoldingChart({ data }: { data: HoldingMetrics[] }) {
-  const [ref, width] = useWidth<HTMLDivElement>();
-  const narrow = width > 0 && width < NARROW_WIDTH;
-  const hasLoss = data.some((h) => h.pnlPct < 0);
+  const [ref, width] = useElementWidth<HTMLDivElement>();
+  const [showAll, setShowAll] = useState(false);
+
+  const stacked = width > 0 && width < STACKED_WIDTH;
+  // Side-by-side: the name column takes ~30% of the chart, within sensible bounds.
+  // Stacked: 1px, because Recharts skips drawing a 0-width axis (and its name labels).
+  const nameColumn = stacked ? 1 : Math.round(Math.min(260, Math.max(160, width * 0.3)));
+  const maxChars = Math.floor((stacked ? width - 8 : nameColumn - 12) / CHAR_WIDTH);
+  const rowHeight = stacked ? 50 : 38;
+
+  const collapsible = data.length > COLLAPSED_LIMIT;
+  const half = COLLAPSED_LIMIT / 2;
+  const visible = collapsible && !showAll ? [...data.slice(0, half), ...data.slice(-half)] : data;
+  const hasLoss = visible.some((h) => h.pnlPct < 0);
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className="space-y-3">
       <BarChart
         responsive
         layout="vertical"
-        style={{ width: "100%", height: data.length * ROW_HEIGHT + 32 }}
-        data={data}
-        margin={{ top: 0, right: 64, bottom: 0, left: 0 }}
+        style={{ width: "100%", height: visible.length * rowHeight + 30 }}
+        data={visible}
+        margin={{ top: 0, right: 60, bottom: 0, left: 0 }}
+        title="Percentage return on each holding"
       >
         <CartesianGrid horizontal={false} stroke={GRID_COLOR} />
         <XAxis
@@ -79,10 +74,12 @@ export function ReturnsByHoldingChart({ data }: { data: HoldingMetrics[] }) {
         <YAxis
           type="category"
           dataKey="name"
-          width={narrow ? 112 : 190}
+          width={nameColumn}
           tickLine={false}
           axisLine={false}
-          tick={makeNameTick(narrow ? 15 : 26)}
+          tick={(props: YAxisTickContentProps) => (
+            <NameTick {...props} maxChars={maxChars} stacked={stacked} />
+          )}
         />
         <ReferenceLine x={0} stroke="var(--muted-foreground)" />
         <Tooltip
@@ -94,8 +91,8 @@ export function ReturnsByHoldingChart({ data }: { data: HoldingMetrics[] }) {
               <ChartTooltip
                 title={h.name}
                 rows={[
-                  { label: "Invested", value: formatINR(h.invested) },
-                  { label: "Current value", value: formatINR(h.currentValue) },
+                  { label: "Invested", value: formatINRWhole(h.invested) },
+                  { label: "Current value", value: formatINRWhole(h.currentValue) },
                   { label: "Profit / loss", value: formatSignedINR(h.pnl) },
                   { label: "Return", value: formatSignedPercent(h.pnlPct) },
                 ]}
@@ -103,7 +100,7 @@ export function ReturnsByHoldingChart({ data }: { data: HoldingMetrics[] }) {
             );
           }}
         />
-        <Bar dataKey="pnlPct" maxBarSize={20} shape={ReturnBar}>
+        <Bar dataKey="pnlPct" maxBarSize={stacked ? 10 : 18} shape={ReturnBar}>
           <LabelList
             dataKey="pnlPct"
             position="right"
@@ -113,7 +110,54 @@ export function ReturnsByHoldingChart({ data }: { data: HoldingMetrics[] }) {
           />
         </Bar>
       </BarChart>
+
+      {collapsible && (
+        <div className="text-muted-foreground flex flex-wrap items-center justify-between gap-2 border-t pt-3 text-sm">
+          <span>
+            {showAll
+              ? `Showing all ${data.length} holdings`
+              : `Showing best ${half} and worst ${half} of ${data.length} holdings`}
+          </span>
+          <Button variant="outline" size="sm" onClick={() => setShowAll((s) => !s)}>
+            {showAll ? "Show fewer" : "Show all"}
+          </Button>
+        </div>
+      )}
     </div>
+  );
+}
+
+/**
+ * Holding name drawn on a single line (Recharts would otherwise wrap it).
+ * Side-by-side: right-aligned in the name column. Stacked: left-aligned above its bar.
+ */
+function NameTick({
+  y,
+  x,
+  payload,
+  maxChars,
+  stacked,
+}: YAxisTickContentProps & { maxChars: number; stacked: boolean }) {
+  const name = String(payload.value);
+  return (
+    <text
+      x={stacked ? 0 : x}
+      y={stacked ? Number(y) - 13 : y}
+      dy={stacked ? 0 : 4}
+      textAnchor={stacked ? "start" : "end"}
+      fontSize={12}
+      fill="var(--foreground)"
+      // Stacked names sit over the gridlines; a halo in the card color keeps them legible
+      {...(stacked && {
+        stroke: "var(--card)",
+        strokeWidth: 4,
+        strokeLinejoin: "round" as const,
+        paintOrder: "stroke",
+      })}
+    >
+      <title>{name}</title>
+      {truncate(name, Math.max(8, maxChars))}
+    </text>
   );
 }
 

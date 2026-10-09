@@ -27,14 +27,24 @@ export default function DashboardPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8 sm:px-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Portfolio overview</h1>
+      <div className="space-y-1">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">Portfolio overview</h1>
+          <span className="bg-primary/10 text-primary rounded-full px-2.5 py-0.5 text-xs font-medium">
+            Sample data
+          </span>
+        </div>
         <p className="text-muted-foreground text-sm">
-          Showing sample data. Sign-in and your own holdings are coming next.
+          An example Indian portfolio. Your own holdings will appear here once sign-in is added.
         </p>
       </div>
 
-      <SummaryCards summary={summary} best={ranked[0]} worst={ranked.at(-1)} />
+      <SummaryCards
+        summary={summary}
+        assetTypeCount={byType.length}
+        best={ranked[0]}
+        worst={ranked.at(-1)}
+      />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <SectionCard
@@ -48,7 +58,7 @@ export default function DashboardPage() {
         <SectionCard
           icon={BarChart3}
           title="Invested vs current value"
-          description="How each asset type has grown"
+          description="What you put in, what it is worth now, and the growth"
         >
           <ValueByTypeChart data={byType} />
         </SectionCard>
