@@ -37,6 +37,11 @@ npm run dev
 
 Open http://localhost:3000.
 
+**Supabase setup:** create a free project at [supabase.com](https://supabase.com), copy its URL and
+publishable key into `.env.local` (Connect → App Frameworks → Next.js), and under
+Authentication → URL Configuration add `http://localhost:3000/**` to the Redirect URLs so
+confirmation emails link back to your local app.
+
 | Script              | What it does               |
 | ------------------- | -------------------------- |
 | `npm run dev`       | Start the dev server       |
@@ -49,7 +54,7 @@ Open http://localhost:3000.
 
 - [x] Project setup, CI pipeline
 - [x] Dashboard with charts (sample data)
-- [ ] Authentication
+- [x] Authentication (Supabase email + password, protected dashboard)
 - [ ] Holdings CRUD backed by PostgreSQL
 - [ ] Deploy to Vercel, demo account
 - [ ] Live NSE/BSE and mutual fund prices
