@@ -1,22 +1,19 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { AuthCard } from "@/components/auth/auth-card";
 import { AuthForm } from "@/components/auth/auth-form";
+import { AuthLink } from "@/components/auth/auth-link";
 
 export const metadata: Metadata = { title: "Log in · Investment Tracker" };
 
 export default function LoginPage() {
   return (
     <AuthCard
-      title="Welcome back"
-      description="Log in to see your portfolio."
+      title="Log in"
+      description="Enter your email and password to open your dashboard."
       footer={
         <>
-          New here?{" "}
-          <Link href="/signup" className="text-primary font-medium hover:underline">
-            Create an account
-          </Link>
+          New here? <AuthLink href="/signup">Create an account</AuthLink>
         </>
       }
     >

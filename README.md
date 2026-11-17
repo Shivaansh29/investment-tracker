@@ -20,7 +20,7 @@
 | ------------------ | ----------------------------------------------- |
 | Frontend           | Next.js (App Router), React, TypeScript         |
 | Styling            | Tailwind CSS, shadcn/ui                         |
-| Charts             | Recharts                                        |
+| Charts & motion    | Custom SVG/CSS and Canvas charts, Motion        |
 | Backend & database | Supabase (PostgreSQL, Auth, Row Level Security) |
 | Testing            | Vitest, Playwright                              |
 | CI/CD              | GitHub Actions, Vercel                          |

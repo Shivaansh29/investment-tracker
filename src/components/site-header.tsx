@@ -1,19 +1,26 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { ChartPie, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { signOut } from "@/app/(auth)/actions";
+import { Logo } from "@/components/brand/logo";
+import { SignedOutNav } from "@/components/signed-out-nav";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { getOptionalUser } from "@/lib/auth";
 
+/**
+ * Fixed to the top of every page. Pages leave room for it with
+ * `pt-(--header-h)`; the landing hero instead runs underneath it.
+ */
 export function SiteHeader() {
   return (
-    <header className="bg-background/80 sticky top-0 z-10 border-b backdrop-blur">
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/dashboard" className="flex shrink-0 items-center gap-2.5 font-semibold">
-          <span className="from-hero-from to-hero-to flex size-8 items-center justify-center rounded-lg bg-linear-to-br text-white shadow-sm">
-            <ChartPie className="size-4.5" aria-hidden />
-          </span>
-          <span className="hidden sm:inline">Investment Tracker</span>
+    <header className="border-line bg-background/70 fixed inset-x-0 top-0 z-40 h-(--header-h) border-b backdrop-blur-md">
+      <div className="mx-auto flex h-full w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-8">
+        <Link
+          href="/"
+          aria-label="Investment Tracker home"
+          className="inline-flex min-h-10 min-w-10 shrink-0 items-center rounded-md"
+        >
+          <Logo compact />
         </Link>
         {/* Who is signed in is only known per request, so it streams in after the shell */}
         <Suspense>
@@ -27,32 +34,21 @@ export function SiteHeader() {
 async function UserNav() {
   const user = await getOptionalUser();
 
-  if (!user) {
-    return (
-      <nav className="flex items-center gap-2 text-sm">
-        <Link href="/login" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-          Log in
-        </Link>
-        <Link href="/signup" className={buttonVariants({ size: "sm" })}>
-          Sign up
-        </Link>
-      </nav>
-    );
-  }
+  if (!user) return <SignedOutNav />;
 
   return (
-    <nav className="flex min-w-0 items-center gap-2 text-sm">
-      <Link
-        href="/dashboard"
-        className="bg-primary/10 text-primary rounded-md px-3 py-1.5 font-medium"
-      >
-        Dashboard
-      </Link>
+    <nav aria-label="Account" className="flex min-w-0 items-center gap-3 text-sm">
       <span className="text-muted-foreground hidden truncate md:inline" title={user.email}>
         {user.email}
       </span>
+      <Link
+        href="/dashboard"
+        className={buttonVariants({ variant: "ghost", size: "lg", className: "h-10" })}
+      >
+        Dashboard
+      </Link>
       <form action={signOut}>
-        <Button type="submit" variant="outline" size="sm">
+        <Button type="submit" variant="outline" size="lg" className="h-10">
           <LogOut aria-hidden />
           Sign out
         </Button>
