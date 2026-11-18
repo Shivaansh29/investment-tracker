@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatDate,
   formatINR,
   formatINRAxisTick,
   formatINRCompact,
@@ -41,5 +42,22 @@ describe("percent formatting", () => {
 
   it("formats plain percentages", () => {
     expect(formatPercent(23.456)).toBe("23.5%");
+  });
+});
+
+describe("date formatting", () => {
+  it("writes an ISO date as day, short month and year", () => {
+    expect(formatDate("2023-06-12")).toBe("12 Jun 2023");
+    expect(formatDate("2024-01-08")).toBe("8 Jan 2024");
+  });
+
+  it("keeps the same day at the edges of a year", () => {
+    // Formatting in UTC means these never slip into the neighbouring day
+    expect(formatDate("2022-12-31")).toBe("31 Dec 2022");
+    expect(formatDate("2024-01-01")).toBe("1 Jan 2024");
+  });
+
+  it("returns text that is not a date unchanged", () => {
+    expect(formatDate("not a date")).toBe("not a date");
   });
 });

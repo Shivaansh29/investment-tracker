@@ -64,3 +64,20 @@ export function formatSignedPercent(value: number): string {
 export function formatPercent(value: number, digits = 1): string {
   return `${value.toFixed(digits)}%`;
 }
+
+const shortDate = new Intl.DateTimeFormat("en-IN", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  // An ISO date has no time zone. Reading and printing it in UTC means the
+  // day never shifts, wherever the server or the visitor's browser is.
+  timeZone: "UTC",
+});
+
+/** 12 Jun 2023, from an ISO date such as "2023-06-12". */
+export function formatDate(isoDate: string): string {
+  const date = new Date(isoDate);
+  // A value that is not a date is shown as it came, rather than crashing the page
+  if (Number.isNaN(date.getTime())) return isoDate;
+  return shortDate.format(date);
+}

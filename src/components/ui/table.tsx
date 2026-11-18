@@ -3,8 +3,16 @@
 import * as React from "react";
 import { cn } from "cn";
 
+/*
+ * Table parts in "The Tape" style: hairline rules between rows, no zebra
+ * stripes or filled header. Rows are plain by default; a table that wants
+ * clickable rows adds its own hover colour.
+ */
+
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
+    // If the columns ever need more room than the panel has, the table scrolls
+    // inside this wrapper instead of making the whole page scroll sideways
     <div data-slot="table-container" className="relative w-full overflow-x-auto">
       <table
         data-slot="table"
@@ -16,7 +24,13 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
 }
 
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
-  return <thead data-slot="table-header" className={cn("[&_tr]:border-b", className)} {...props} />;
+  return (
+    <thead
+      data-slot="table-header"
+      className={cn("[&_tr]:border-line [&_tr]:border-b", className)}
+      {...props}
+    />
+  );
 }
 
 function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
@@ -33,7 +47,8 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
   return (
     <tfoot
       data-slot="table-footer"
-      className={cn("bg-muted/50 border-t font-medium [&>tr]:last:border-b-0", className)}
+      // A stronger rule than the row hairlines, the way a sum is ruled off on paper
+      className={cn("border-foreground/30 border-t font-medium [&>tr]:last:border-b-0", className)}
       {...props}
     />
   );
@@ -43,10 +58,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
       data-slot="table-row"
-      className={cn(
-        "hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
-        className,
-      )}
+      className={cn("border-line border-b transition-colors", className)}
       {...props}
     />
   );
@@ -57,7 +69,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0",
+        "text-muted-foreground px-3 py-2 text-left align-bottom text-sm font-medium whitespace-nowrap",
         className,
       )}
       {...props}
@@ -69,7 +81,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td
       data-slot="table-cell"
-      className={cn("p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0", className)}
+      className={cn("px-3 py-3 align-middle whitespace-nowrap", className)}
       {...props}
     />
   );
